@@ -20,7 +20,7 @@ namespace ContosoBooks.Controllers
         // GET: Books
         public IActionResult Index()
         {
-            var books = db.BooksIncluding(b => b.Author).OrderBy(x => x.Author.LastName).ThenBy(x => x.Author.FirstName).ThenBy(x => x.YearPublished).ThenBy(x => x.Title).ToList();
+			var books = db.Books.Include(x => x.Author).OrderBy(x => x.Author.LastName).ThenBy(x => x.Author.FirstName).ThenBy(x => x.YearPublished).ThenBy(x => x.Title).ToList();
             return View(books);
         }
 

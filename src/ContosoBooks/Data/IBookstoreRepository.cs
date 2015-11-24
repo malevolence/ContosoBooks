@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace ContosoBooks.Data
@@ -11,9 +10,6 @@ namespace ContosoBooks.Data
     {
 		IQueryable<Book> Books { get; }
 		IQueryable<Author> Authors { get; }
-
-		IQueryable<Book> BooksIncluding(params Expression<Func<Book, object>>[] includeProperties);
-		IQueryable<Author> AuthorsIncluding(params Expression<Func<Author, object>>[] includeProperties);
 
 		Book GetBook(int id);
 		Author GetAuthor(int id);

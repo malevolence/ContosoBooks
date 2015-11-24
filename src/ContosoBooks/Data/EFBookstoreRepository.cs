@@ -33,30 +33,6 @@ namespace ContosoBooks.Data
 			}
 		}
 
-		public IQueryable<Author> AuthorsIncluding(params Expression<Func<Author, object>>[] includeProperties)
-		{
-			IQueryable<Author> query = context.Authors;
-
-			foreach (var includeProperty in includeProperties)
-			{
-				query.Include(includeProperty);
-			}
-
-			return query;
-		}
-
-		public IQueryable<Book> BooksIncluding(params Expression<Func<Book, object>>[] includeProperties)
-		{
-			IQueryable<Book> query = context.Books;
-
-			foreach (var includeProperty in includeProperties)
-			{
-				query.Include(includeProperty);
-			}
-
-			return query;
-		}
-
 		public Author GetAuthor(int id)
 		{
 			return context.Authors.SingleOrDefault(x => x.Id == id);
@@ -64,7 +40,7 @@ namespace ContosoBooks.Data
 
 		public Book GetBook(int id)
 		{
-			return context.Books.SingleOrDefault(x => x.Id == id);
+			return context.Books.Include(x => x.Author).SingleOrDefault(x => x.Id == id);
 		}
 
 		public void AddOrUpdateAuthor(Author author)
