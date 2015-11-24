@@ -4,23 +4,24 @@ using Microsoft.AspNet.Mvc.Rendering;
 using Microsoft.Data.Entity;
 using ContosoBooks.Data;
 using ContosoBooks.Models;
+using System.Collections.Generic;
 
 namespace ContosoBooks.Controllers
 {
     public class BooksController : Controller
     {
-        private SiteContext _context;
+		private readonly IBookstoreRepository db;
 
-        public BooksController(SiteContext context)
+        public BooksController(IBookstoreRepository repo)
         {
-            _context = context;    
+			this.db = repo;
         }
 
         // GET: Books
         public IActionResult Index()
         {
-            var siteContext = _context.Book.Include(b => b.Author);
-            return View(siteContext.ToList());
+            var books = db.BooksIncluding(b => b.Author).OrderBy(x => x.Author.LastName).ThenBy(x => x.Author.FirstName).ThenBy(x => x.YearPublished).ThenBy(x => x.Title).ToList();
+            return View(books);
         }
 
         // GET: Books/Details/5
@@ -31,7 +32,7 @@ namespace ContosoBooks.Controllers
                 return HttpNotFound();
             }
 
-            Book book = _context.Book.Single(m => m.Id == id);
+            var book = db.GetBook(id.Value);
             if (book == null)
             {
                 return HttpNotFound();
@@ -43,7 +44,7 @@ namespace ContosoBooks.Controllers
         // GET: Books/Create
         public IActionResult Create()
         {
-            ViewData["AuthorId"] = new SelectList(_context.Set<Author>(), "Id", "Author");
+            AddAuthorDropdown();
             return View();
         }
 
@@ -54,11 +55,12 @@ namespace ContosoBooks.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Book.Add(book);
-                _context.SaveChanges();
+				db.AddOrUpdateBook(book);
+				db.SaveChanges();
+				TempData["success"] = $"New book added successfully with Id = {book.Id}";
                 return RedirectToAction("Index");
             }
-            ViewData["AuthorId"] = new SelectList(_context.Set<Author>(), "Id", "Author", book.AuthorId);
+            AddAuthorDropdown(book.AuthorId);
             return View(book);
         }
 
@@ -70,12 +72,12 @@ namespace ContosoBooks.Controllers
                 return HttpNotFound();
             }
 
-            Book book = _context.Book.Single(m => m.Id == id);
+            var book = db.GetBook(id.Value);
             if (book == null)
             {
                 return HttpNotFound();
             }
-            ViewData["AuthorId"] = new SelectList(_context.Set<Author>(), "Id", "Author", book.AuthorId);
+            AddAuthorDropdown(book.AuthorId);
             return View(book);
         }
 
@@ -86,11 +88,12 @@ namespace ContosoBooks.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Update(book);
-                _context.SaveChanges();
+                db.AddOrUpdateBook(book);
+                db.SaveChanges();
+				TempData["success"] = $"Changes saved successfully for book with Id = {book.Id}";
                 return RedirectToAction("Index");
             }
-            ViewData["AuthorId"] = new SelectList(_context.Set<Author>(), "Id", "Author", book.AuthorId);
+            AddAuthorDropdown(book.AuthorId);
             return View(book);
         }
 
@@ -103,7 +106,7 @@ namespace ContosoBooks.Controllers
                 return HttpNotFound();
             }
 
-            Book book = _context.Book.Single(m => m.Id == id);
+            var book = db.GetBook(id.Value);
             if (book == null)
             {
                 return HttpNotFound();
@@ -117,10 +120,19 @@ namespace ContosoBooks.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            Book book = _context.Book.Single(m => m.Id == id);
-            _context.Book.Remove(book);
-            _context.SaveChanges();
+			db.DeleteBook(id);
+			db.SaveChanges();
+			TempData["success"] = $"Book with Id = {id} deleted successfully";
             return RedirectToAction("Index");
         }
+
+		private void AddAuthorDropdown(int? authorId = null)
+		{
+			ViewBag.PossibleAuthors = db.Authors.OrderBy(x => x.LastName).ThenBy(x => x.FirstName).ToList().Select(x => new SelectListItem
+			{
+				Text = x.FirstName + " " + x.LastName,
+				Value = x.Id.ToString()
+			}).ToList();
+		}
     }
 }

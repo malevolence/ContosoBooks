@@ -25,6 +25,7 @@ namespace ContosoBooks.Models
 		public decimal Price { get; set; }
 
 		[ScaffoldColumn(false)]
+		[Display(Name = "Author")]
 		public int AuthorId { get; set; }
 
 		public virtual Author Author { get; set; }

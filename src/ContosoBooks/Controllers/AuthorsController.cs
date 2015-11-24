@@ -1,4 +1,4 @@
-using System.Linq;
+ using System.Linq;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Rendering;
 using Microsoft.Data.Entity;
@@ -9,17 +9,18 @@ namespace ContosoBooks.Controllers
 {
     public class AuthorsController : Controller
     {
-        private SiteContext _context;
+        private readonly IBookstoreRepository db;
 
-        public AuthorsController(SiteContext context)
-        {
-            _context = context;    
-        }
+		public AuthorsController(IBookstoreRepository repo)
+		{
+			this.db = repo;
+		}
 
         // GET: Authors
         public IActionResult Index()
         {
-            return View(_context.Author.ToList());
+			var authors = db.Authors.OrderBy(x => x.LastName).ThenBy(x => x.FirstName).ToList();
+            return View(authors);
         }
 
         // GET: Authors/Details/5
@@ -30,7 +31,7 @@ namespace ContosoBooks.Controllers
                 return HttpNotFound();
             }
 
-            Author author = _context.Author.Single(m => m.Id == id);
+            var author = db.GetAuthor(id.Value);
             if (author == null)
             {
                 return HttpNotFound();
@@ -52,8 +53,9 @@ namespace ContosoBooks.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Author.Add(author);
-                _context.SaveChanges();
+				db.AddOrUpdateAuthor(author);
+				db.SaveChanges();
+				TempData["success"] = $"New author added with Id = {author.Id}";
                 return RedirectToAction("Index");
             }
             return View(author);
@@ -67,7 +69,8 @@ namespace ContosoBooks.Controllers
                 return HttpNotFound();
             }
 
-            Author author = _context.Author.Single(m => m.Id == id);
+            var author = db.GetAuthor(id.Value);
+
             if (author == null)
             {
                 return HttpNotFound();
@@ -82,8 +85,9 @@ namespace ContosoBooks.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Update(author);
-                _context.SaveChanges();
+				db.AddOrUpdateAuthor(author);
+				db.SaveChanges();
+				TempData["success"] = $"Changes to author with Id = {author.Id} saved successfully";
                 return RedirectToAction("Index");
             }
             return View(author);
@@ -98,7 +102,7 @@ namespace ContosoBooks.Controllers
                 return HttpNotFound();
             }
 
-            Author author = _context.Author.Single(m => m.Id == id);
+            var author = db.GetAuthor(id.Value);
             if (author == null)
             {
                 return HttpNotFound();
@@ -112,9 +116,9 @@ namespace ContosoBooks.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
-            Author author = _context.Author.Single(m => m.Id == id);
-            _context.Author.Remove(author);
-            _context.SaveChanges();
+			db.DeleteAuthor(id);
+			db.SaveChanges();
+			TempData["success"] = $"Author with Id = {id} deleted successfully";
             return RedirectToAction("Index");
         }
     }

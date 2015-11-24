@@ -8,9 +8,10 @@ using ContosoBooks.Data;
 namespace ContosoBooks.Migrations
 {
     [DbContext(typeof(SiteContext))]
-    partial class SiteContextModelSnapshot : ModelSnapshot
+    [Migration("20151124135838_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "7.0.0-rc1-16348")

@@ -14,13 +14,13 @@ namespace ContosoBooks.Data
 		{
 			var context = serviceProvider.GetService<SiteContext>();
 			context.Database.Migrate();
-			if (!context.Book.Any())
+			if (!context.Books.Any())
 			{
-				var tolkien = context.Author.Add(new Author { LastName = "Tolkien", FirstName = "J.R.R." }).Entity;
-				var asimov = context.Author.Add(new Author { LastName = "Asimov", FirstName = "Isaac" }).Entity;
-				var grrm = context.Author.Add(new Author { LastName = "Martin", FirstName = "George R.R." }).Entity;
+				var tolkien = context.Authors.Add(new Author { LastName = "Tolkien", FirstName = "J.R.R." }).Entity;
+				var asimov = context.Authors.Add(new Author { LastName = "Asimov", FirstName = "Isaac" }).Entity;
+				var grrm = context.Authors.Add(new Author { LastName = "Martin", FirstName = "George R.R." }).Entity;
 
-				context.Book.AddRange(
+				context.Books.AddRange(
 					new Book { Author = tolkien, Title = "Fellowship of the Ring", Genre = "Fantasy", YearPublished = 1954, Price = 7.99M },
 					new Book { Author = tolkien, Title = "The Two Towers", Genre = "Fantasy", YearPublished = 1954, Price = 8.99M },
 					new Book { Author = tolkien, Title = "Return of the King", Genre = "Fantasy", YearPublished = 1955, Price = 9.99M },
