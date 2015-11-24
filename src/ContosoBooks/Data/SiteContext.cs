@@ -17,5 +17,7 @@ namespace ContosoBooks.Data
             // For example, you can rename the ASP.NET Identity table names and more.
             // Add your customizations after calling base.OnModelCreating(builder);
         }
+        public DbSet<Book> Book { get; set; }
+        public DbSet<Author> Author { get; set; }
     }
 }
