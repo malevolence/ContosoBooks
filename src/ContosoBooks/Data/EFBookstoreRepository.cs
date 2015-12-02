@@ -33,6 +33,30 @@ namespace ContosoBooks.Data
 			}
 		}
 
+		public IQueryable<Book> BooksIncluding(params Expression<Func<Book, object>>[] includeProperties)
+		{
+			IQueryable<Book> query = context.Books;
+
+			foreach (var includeProp in includeProperties)
+			{
+				query = query.Include(includeProp);
+			}
+
+			return query;
+		}
+
+		public IQueryable<Author> AuthorsIncluding(params Expression<Func<Author, object>>[] includeProperties)
+		{
+			IQueryable<Author> query = context.Authors;
+
+			foreach (var includeProp in includeProperties)
+			{
+				query = query.Include(includeProp);
+			}
+
+			return query;
+		}
+
 		public Author GetAuthor(int id)
 		{
 			return context.Authors.SingleOrDefault(x => x.Id == id);

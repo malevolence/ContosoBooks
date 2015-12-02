@@ -19,7 +19,7 @@ namespace ContosoBooks.Controllers
         // GET: Authors
         public IActionResult Index()
         {
-			var authors = db.Authors.OrderBy(x => x.LastName).ThenBy(x => x.FirstName).ToList();
+			var authors = db.AuthorsIncluding(x => x.Books).OrderBy(x => x.LastName).ThenBy(x => x.FirstName).ToList();
             return View(authors);
         }
 
