@@ -1,6 +1,35 @@
-﻿@{
+﻿@model HomeVM
+@{
     ViewData["Title"] = "Home Page";
 }
+
+<h3>Braintree Settings</h3>
+<dl>
+	<dt>Environment</dt>
+	<dd>@Model.BraintreeSettings.Environment</dd>
+
+	<dt>Merchant Id</dt>
+	<dd>@Model.BraintreeSettings.MerchantId</dd>
+
+	<dt>Public Key</dt>
+	<dd>@Model.BraintreeSettings.PublicKey</dd>
+
+	<dt>Private Key</dt>
+	<dd>@Model.BraintreeSettings.PrivateKey</dd>
+</dl>
+
+<h3>Constant Contact Settings</h3>
+<dl>
+	<dt>Key</dt>
+	<dd>@Model.ConstantContactSettings.Key</dd>
+
+	<dt>Secret</dt>
+	<dd>@Model.ConstantContactSettings.Secret</dd>
+
+	<dt>Token</dt>
+	<dd>@Model.ConstantContactSettings.Token</dd>
+</dl>
+
 
 <div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="6000">
     <ol class="carousel-indicators">

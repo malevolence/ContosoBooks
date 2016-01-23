@@ -3,14 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Mvc;
+using ContosoBooks.Config;
+using Microsoft.Extensions.OptionsModel;
+using ContosoBooks.ViewModels;
 
 namespace ContosoBooks.Controllers
 {
     public class HomeController : Controller
     {
+		private BraintreeSettings braintreeSettings;
+		private ConstantContactSettings constantContactSettings;
+
+		public HomeController(IOptions<BraintreeSettings> btSettingsAccessor, IOptions<ConstantContactSettings> ccSettingsAccessor)
+		{
+			braintreeSettings = btSettingsAccessor.Value;
+			constantContactSettings = ccSettingsAccessor.Value;
+		}
+
         public IActionResult Index()
         {
-            return View();
+			var model = new HomeVM();
+			model.BraintreeSettings = braintreeSettings;
+			model.ConstantContactSettings = constantContactSettings;
+            return View(model);
         }
 
         public IActionResult About()

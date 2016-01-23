@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using ContosoBooks.Models;
 using ContosoBooks.Services;
 using ContosoBooks.Data;
+using ContosoBooks.Config;
 
 namespace ContosoBooks
 {
@@ -49,12 +50,23 @@ namespace ContosoBooks
                 .AddEntityFrameworkStores<SiteContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddMvc();
+			services.AddOptions();
+
+			services.Configure<BraintreeSettings>(Configuration.GetSection("AppSettings:Braintree"));
+			services.Configure<ConstantContactSettings>(Configuration.GetSection("AppSettings:ConstantContact"));
+
+			services.AddMvc();
 			services.AddCaching();
 			services.AddSession();
 
-            // Add application services.
-            services.AddTransient<IEmailSender, AuthMessageSender>();
+			services.ConfigureRouting(opts =>
+			{
+				opts.AppendTrailingSlash = false;
+				opts.LowercaseUrls = true;
+			});
+
+			// Add application services.
+			services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
 			services.AddScoped<IBookstoreRepository, EFBookstoreRepository>();
         }
@@ -97,6 +109,7 @@ namespace ContosoBooks
 			app.UseSession();
 
             // To configure external authentication please see http://go.microsoft.com/fwlink/?LinkID=532715
+
 
             app.UseMvc(routes =>
             {
